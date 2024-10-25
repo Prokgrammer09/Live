@@ -1,0 +1,57 @@
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Updates with WebSocket</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <h1>100m Race</h1>
+    <div id="updates">
+        <p class="pos1"></p>
+        <p class="pos2"></p>
+        <p class="pos3"></p>
+    </div>
+
+    <script>
+        names = ['Delhi Public School','Pratap Public School','RPS']
+
+        pos1 = document.querySelector('.pos1')
+        pos2 = document.querySelector('.pos2')
+        pos3 = document.querySelector('.pos3')
+
+        pos1.innerHTML = names[0]
+        pos2.innerHTML = names[1]
+        pos3.innerHTML = names[2]
+
+        const updatesDiv = document.getElementById('updates');
+        const socket = new WebSocket('ws://localhost:8080'); // Update with your server URL
+
+        socket.onopen = () => {
+            console.log('WebSocket connection established');
+        };
+
+        socket.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            displayUpdates(data);
+        };
+
+        function displayUpdates(data) {
+            updatesDiv.innerHTML = ''; // Clear previous updates
+            data.forEach(update => {
+                const updateItem = document.createElement('div');
+                updateItem.textContent = update.message; // Adjust based on actual data structure
+                updatesDiv.appendChild(updateItem);
+            });
+        }
+
+        socket.onclose = () => {
+            console.log('WebSocket connection closed');
+        };
+    </script>
+</body>
+
+</html>
